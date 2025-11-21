@@ -2,7 +2,7 @@
 
 using UnrealBuildTool;
 
-public class TurnBasedProject : ModuleRules
+public class 	TurnBasedProject : ModuleRules
 {
 	public TurnBasedProject(ReadOnlyTargetRules Target) : base(Target)
 	{
@@ -18,7 +18,11 @@ public class TurnBasedProject : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"GameplayAbilities", 
+			"GameplayTasks", 
+			"GameplayTags",
+			"EnhancedInput",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

@@ -4,15 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "PlayerCharacter.generated.h"
 
+class UMyAbilitySystemComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class TURNBASEDPROJECT_API APlayerCharacter : public ACharacter
+class TURNBASEDPROJECT_API APlayerCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +25,9 @@ class TURNBASEDPROJECT_API APlayerCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UMyAbilitySystemComponent* CustomASC;
 
 public:
 	// Sets default values for this character's properties
@@ -49,7 +54,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-	
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	void PossessedBy(AController* NewController);
 
 public:	
 	// Called every frame
