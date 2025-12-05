@@ -4,14 +4,12 @@
 #include "MyPlayerState.h"
 #include "Player/PlayerAttributeSet.h"
 #include "MyAbilitySystemComponent.h"
+#include "GameplayAbilities/WalkAbility.h"
+#include "GameplayAbilities/RunAbility.h"
 
 AMyPlayerState::AMyPlayerState()
 {
 	CustomASC = CreateDefaultSubobject<UMyAbilitySystemComponent>("CustomASC");
-	CustomASC->SetIsReplicated(true);
-	CustomASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-	SetNetUpdateFrequency(100);
-
 	PlayerAttributSet = CreateDefaultSubobject<UPlayerAttributeSet>(TEXT("PlayerAttributSet"));
 }
 
@@ -19,3 +17,10 @@ UAbilitySystemComponent* AMyPlayerState::GetAbilitySystemComponent() const
 {
 	return CustomASC;
 }
+
+void AMyPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+

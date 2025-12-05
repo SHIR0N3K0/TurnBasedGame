@@ -71,6 +71,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		
 	}
 	else
 	{
@@ -113,7 +114,6 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-
 UAbilitySystemComponent* APlayerCharacter::GetAbilitySystemComponent() const
 {
 	return CustomASC;

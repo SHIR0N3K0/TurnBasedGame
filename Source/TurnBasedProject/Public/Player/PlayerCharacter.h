@@ -48,15 +48,16 @@ protected:
 	/** LookInput Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* RunAction;
 	
+	//----------------------------------------------InputEvent-----------------------------------------------------
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	void PossessedBy(AController* NewController);
 
 public:	
 	// Called every frame
@@ -64,5 +65,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	void PossessedBy(AController* NewController);
 
 };

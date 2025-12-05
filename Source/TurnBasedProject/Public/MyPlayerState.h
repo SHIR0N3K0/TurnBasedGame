@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "MyPlayerState.generated.h"
 
 class UPlayerAttributeSet;
 class UMyAbilitySystemComponent;
+class UWalkAbility;
+class URunAbility;
 /**
  * 
  */
@@ -24,6 +27,8 @@ class TURNBASEDPROJECT_API AMyPlayerState : public APlayerState, public IAbility
 	AMyPlayerState();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	UPlayerAttributeSet* PlayerAttributSet;
