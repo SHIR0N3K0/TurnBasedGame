@@ -4,8 +4,6 @@
 #include "MyPlayerState.h"
 #include "Player/PlayerAttributeSet.h"
 #include "MyAbilitySystemComponent.h"
-#include "GameplayAbilities/WalkAbility.h"
-#include "GameplayAbilities/RunAbility.h"
 
 AMyPlayerState::AMyPlayerState()
 {
