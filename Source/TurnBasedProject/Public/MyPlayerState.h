@@ -30,6 +30,6 @@ class TURNBASEDPROJECT_API AMyPlayerState : public APlayerState, public IAbility
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPlayerAttributeSet* PlayerAttributSet;
 };
