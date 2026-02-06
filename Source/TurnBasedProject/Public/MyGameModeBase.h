@@ -6,8 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "MyGameModeBase.generated.h"
 
-class AJRPGController;
-class ATPSController;
+class ACustomPlayerController;
 /**
  * 
  */
@@ -19,14 +18,9 @@ class TURNBASEDPROJECT_API AMyGameModeBase : public AGameModeBase
 public:
 
 	UPROPERTY()
-	ATPSController* TPSController;
-
-	UPROPERTY()
-	AJRPGController* JRPGController;
+	ACustomPlayerController* CustomPlayerController;
 	
 	UFUNCTION()
 	void SetController();
-
-	template<typename ControllerClass>
-	void SwitchToController();
+	
 };

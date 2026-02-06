@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "TPSController.generated.h"
+#include "CustomPlayerController.generated.h"
 
 class UInputMappingContext;
 /**
  * 
  */
 UCLASS()
-class TURNBASEDPROJECT_API ATPSController : public APlayerController
+class TURNBASEDPROJECT_API ACustomPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 

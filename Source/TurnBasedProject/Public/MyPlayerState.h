@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
-#include "GameplayAbilitySpecHandle.h"
 #include "MyPlayerState.generated.h"
 
 class UPlayerAttributeSet;
@@ -15,6 +14,14 @@ class URunAbility;
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EGameplayMode : uint8
+{
+	TPS,
+	TurnBased
+};
+
 UCLASS()
 class TURNBASEDPROJECT_API AMyPlayerState : public APlayerState, public IAbilitySystemInterface
 {

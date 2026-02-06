@@ -9,9 +9,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
+#include "GameplayTags/TurnBasedGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "TurnBasedProject.h"
+#include "Enemy/EnemyPawn.h"
+#include "GameplayEffects/AddTurnBasedTag.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -61,16 +65,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+
+		// Attack
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
 		
 	}
 	else
@@ -80,11 +83,28 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
+UAbilitySystemComponent* APlayerCharacter::GetAbilitySystemComponent() const
+{
+	return CustomASC;
+}
+
+void APlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (AMyPlayerState* CustomPState = GetPlayerState<AMyPlayerState>())
+	{
+		CustomASC = Cast<UMyAbilitySystemComponent>(CustomPState->GetAbilitySystemComponent());
+
+		CustomPState->GetAbilitySystemComponent()->InitAbilityActorInfo(CustomPState, this);
+	}
+}
+
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (GetController() != nullptr)
+	if (GetController() && CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
 	{
 		// find out which way is forward
 		const FRotator Rotation = GetController()->GetControlRotation();
@@ -107,26 +127,46 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (GetController() != nullptr)
+	if (GetController() && CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
+
 	{
 		// add yaw and pitch input to controller
 		AddControllerYawInput(-LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-UAbilitySystemComponent* APlayerCharacter::GetAbilitySystemComponent() const
-{
-	return CustomASC;
-}
 
-void APlayerCharacter::PossessedBy(AController* NewController)
+void APlayerCharacter::Attack(const FInputActionValue& Value)
 {
-	Super::PossessedBy(NewController);
-
-	if (AMyPlayerState* CustomPState = GetPlayerState<AMyPlayerState>())
+	if (GetController() && CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
 	{
-		CustomASC = Cast<UMyAbilitySystemComponent>(CustomPState->GetAbilitySystemComponent());
+		FVector Start = GetActorLocation();
+		FVector End = Start + GetActorForwardVector() * 200;
+		float Radius = 80.0f;
 
-		CustomPState->GetAbilitySystemComponent()->InitAbilityActorInfo(CustomPState, this);
+		FHitResult OutHit;
+
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+
+		bool bHasHit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(),Start,End,Radius,ObjectTypes,
+		false,TArray<AActor*>(),EDrawDebugTrace::ForDuration,OutHit,true);
+
+		if (bHasHit)
+		{
+			if (AEnemyPawn* Enemy = Cast<AEnemyPawn>(OutHit.GetActor()))
+			{
+				FGameplayEffectSpecHandle SpecHandle = CustomASC->MakeOutgoingSpec(
+				UAddTurnBasedTag::StaticClass(),1.f,CustomASC->MakeEffectContext());
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,FString::Printf(TEXT("Hit Actor: %s"), *OutHit.GetActor()->GetName()));
+				
+				if (SpecHandle.IsValid())
+				{
+					// Apply the effect to yourself
+					CustomASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Applied")));
+				}
+			}
+		}
 	}
 }

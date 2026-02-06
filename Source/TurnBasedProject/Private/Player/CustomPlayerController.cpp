@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Player/TPSController.h"
+#include "Player/CustomPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 
-void ATPSController::BeginPlay()
+void ACustomPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ATPSController::SetupInputComponent()
+void ACustomPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 

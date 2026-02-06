@@ -37,10 +37,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	/** JumpInput Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* JumpAction;
-
 	/** MoveInput Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
@@ -51,6 +47,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* RunAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* AttackAction;
 	
 	//----------------------------------------------InputEvent-----------------------------------------------------
 	/** Called for movement input */
@@ -58,6 +57,10 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	void Run(const FInputActionValue& Value);
+
+	void Attack(const FInputActionValue& Value);
 
 public:	
 	// Called every frame

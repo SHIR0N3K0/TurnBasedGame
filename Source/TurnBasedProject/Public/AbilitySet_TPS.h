@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
-#include "AttackAbility.generated.h"
+#include "Engine/DataAsset.h"
+#include "AbilitySet_TPS.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TURNBASEDPROJECT_API UAttackAbility : public UGameplayAbility
+class TURNBASEDPROJECT_API UAbilitySet_TPS : public UDataAsset
 {
 	GENERATED_BODY()
-	
 };
