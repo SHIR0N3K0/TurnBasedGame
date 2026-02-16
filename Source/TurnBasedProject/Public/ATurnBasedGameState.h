@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
-#include "AbilitySet_TPS.generated.h"
+#include "GameFramework/GameStateBase.h"
+#include "ATurnBasedGameState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TURNBASEDPROJECT_API UAbilitySet_TPS : public UDataAsset
+class TURNBASEDPROJECT_API AATurnBasedGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 };

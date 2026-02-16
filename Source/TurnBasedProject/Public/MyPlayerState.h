@@ -9,7 +9,6 @@
 
 class UPlayerAttributeSet;
 class UMyAbilitySystemComponent;
-class UWalkAbility;
 class URunAbility;
 /**
  * 
@@ -37,6 +36,9 @@ class TURNBASEDPROJECT_API AMyPlayerState : public APlayerState, public IAbility
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPlayerAttributeSet* PlayerAttributSet;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<URunAbility> RunAbility;
+
+	UFUNCTION()
+	void GiveDefaultAbilities();
 };

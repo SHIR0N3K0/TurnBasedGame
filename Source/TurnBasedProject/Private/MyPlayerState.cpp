@@ -4,11 +4,12 @@
 #include "MyPlayerState.h"
 #include "Player/PlayerAttributeSet.h"
 #include "MyAbilitySystemComponent.h"
+#include "GameplayAbilities/RunAbility.h"
+
 
 AMyPlayerState::AMyPlayerState()
 {
 	CustomASC = CreateDefaultSubobject<UMyAbilitySystemComponent>("CustomASC");
-	PlayerAttributSet = CreateDefaultSubobject<UPlayerAttributeSet>(TEXT("PlayerAttributSet"));
 }
 
 UAbilitySystemComponent* AMyPlayerState::GetAbilitySystemComponent() const
@@ -19,6 +20,19 @@ UAbilitySystemComponent* AMyPlayerState::GetAbilitySystemComponent() const
 void AMyPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (HasAuthority() && CustomASC)
+	{
+		GiveDefaultAbilities();
+	}
+}
+
+void AMyPlayerState::GiveDefaultAbilities()
+{
+	if (!RunAbility) return;
+
+	CustomASC->GiveAbility(
+		FGameplayAbilitySpec(RunAbility, 1, 0)
+	);
 }
 

@@ -72,4 +72,9 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	void PossessedBy(AController* NewController);
 
+	UFUNCTION()
+	void EnterTurnBasedMode();
+	UFUNCTION()
+	void ExitTurnBasedMode();
+
 };

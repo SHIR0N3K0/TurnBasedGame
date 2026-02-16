@@ -14,7 +14,7 @@
 #include "InputActionValue.h"
 #include "TurnBasedProject.h"
 #include "Enemy/EnemyPawn.h"
-#include "GameplayEffects/AddTurnBasedTag.h"
+#include "GameplayAbilities/RunAbility.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
@@ -71,6 +71,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+
+		// Run
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &APlayerCharacter::Run);
 
 		// Attack
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
@@ -136,6 +139,14 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void APlayerCharacter::Run(const FInputActionValue& Value)
+{
+	if (GetController() && CustomASC)
+	{
+		CustomASC->TryActivateAbilityByClass(URunAbility::StaticClass());
+	}
+}
+
 void APlayerCharacter::Attack(const FInputActionValue& Value)
 {
 	if (GetController() && CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
@@ -144,29 +155,33 @@ void APlayerCharacter::Attack(const FInputActionValue& Value)
 		FVector End = Start + GetActorForwardVector() * 200;
 		float Radius = 80.0f;
 
+		TArray<AActor*> ActorsToIgnore;
+		ActorsToIgnore.Add(this);
+
 		FHitResult OutHit;
 
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
 		bool bHasHit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(),Start,End,Radius,ObjectTypes,
-		false,TArray<AActor*>(),EDrawDebugTrace::ForDuration,OutHit,true);
+		false,ActorsToIgnore,EDrawDebugTrace::ForDuration,OutHit,true);
 
 		if (bHasHit)
 		{
 			if (AEnemyPawn* Enemy = Cast<AEnemyPawn>(OutHit.GetActor()))
 			{
-				FGameplayEffectSpecHandle SpecHandle = CustomASC->MakeOutgoingSpec(
-				UAddTurnBasedTag::StaticClass(),1.f,CustomASC->MakeEffectContext());
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,FString::Printf(TEXT("Hit Actor: %s"), *OutHit.GetActor()->GetName()));
-				
-				if (SpecHandle.IsValid())
-				{
-					// Apply the effect to yourself
-					CustomASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Applied")));
-				}
+				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,FString::Printf(TEXT("Hit Actor: %s"), *OutHit.GetActor()->GetName()));
+
 			}
 		}
 	}
+}
+
+void APlayerCharacter::EnterTurnBasedMode()
+{
+	CustomASC->AddLooseGameplayTag(TAG_Mode_TurnBased);
+}
+
+void APlayerCharacter::ExitTurnBasedMode()
+{
 }
