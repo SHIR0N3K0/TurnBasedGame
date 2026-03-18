@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
+#include "UI/HUD_Fight.h"
 #include "GameplayTags/TurnBasedGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
@@ -16,6 +17,7 @@
 #include "Enemy/EnemyPawn.h"
 #include "GameplayAbilities/RunAbility.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Player/CustomPlayerController.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -48,6 +50,9 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CustomASC->AddLooseGameplayTag(TAG_Mode_TPS);
+	CreateWidget(HUDFight);
 	
 }
 
@@ -166,12 +171,12 @@ void APlayerCharacter::Attack(const FInputActionValue& Value)
 		bool bHasHit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(),Start,End,Radius,ObjectTypes,
 		false,ActorsToIgnore,EDrawDebugTrace::ForDuration,OutHit,true);
 
-		if (bHasHit)
+		if (bHasHit && PlayerController != nullptr)
 		{
 			if (AEnemyPawn* Enemy = Cast<AEnemyPawn>(OutHit.GetActor()))
 			{
 				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,FString::Printf(TEXT("Hit Actor: %s"), *OutHit.GetActor()->GetName()));
-
+				EnterTurnBasedMode();
 			}
 		}
 	}
@@ -180,8 +185,24 @@ void APlayerCharacter::Attack(const FInputActionValue& Value)
 void APlayerCharacter::EnterTurnBasedMode()
 {
 	CustomASC->AddLooseGameplayTag(TAG_Mode_TurnBased);
+	CustomASC->RemoveLooseGameplayTag(TAG_Mode_TPS);
+
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
+
+	HUDFight->AddToViewport();
 }
 
 void APlayerCharacter::ExitTurnBasedMode()
 {
+	CustomASC->AddLooseGameplayTag(TAG_Mode_TPS);
+	CustomASC->RemoveLooseGameplayTag(TAG_Mode_TurnBased);
+
+	FInputModeGameOnly InputMode;
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = false;
+
+	HUDFight->RemoveFromParent();
 }

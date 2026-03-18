@@ -29,19 +29,6 @@ public class 	TurnBasedProject : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[] {
 			"TurnBasedProject",
-			"TurnBasedProject/Variant_Platforming",
-			"TurnBasedProject/Variant_Platforming/Animation",
-			"TurnBasedProject/Variant_Combat",
-			"TurnBasedProject/Variant_Combat/AI",
-			"TurnBasedProject/Variant_Combat/Animation",
-			"TurnBasedProject/Variant_Combat/Gameplay",
-			"TurnBasedProject/Variant_Combat/Interfaces",
-			"TurnBasedProject/Variant_Combat/UI",
-			"TurnBasedProject/Variant_SideScrolling",
-			"TurnBasedProject/Variant_SideScrolling/AI",
-			"TurnBasedProject/Variant_SideScrolling/Gameplay",
-			"TurnBasedProject/Variant_SideScrolling/Interfaces",
-			"TurnBasedProject/Variant_SideScrolling/UI"
 		});
 
 		// Uncomment if you are using Slate UI

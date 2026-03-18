@@ -2,7 +2,6 @@
 
 
 #include "Enemy/EnemyPawn.h"
-#include "Components/BoxComponent.h"
 
 // Sets default values
 AEnemyPawn::AEnemyPawn()
@@ -16,17 +15,13 @@ AEnemyPawn::AEnemyPawn()
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
 	SkeletalMeshComponent->SetupAttachment(DefaultSceneRoot);
 
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	BoxComponent->SetupAttachment(SkeletalMeshComponent);
-
 }
 
 // Called when the game starts or when spawned
 void AEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	BoxComponent->OnComponentBeginOverlap.AddDynamic(this,&AEnemyPawn::OnBoxComponentBeginOverlap);
+	
 }
 
 // Called every frame
@@ -43,16 +38,4 @@ void AEnemyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
-void AEnemyPawn::OnBoxComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (!OtherActor || OtherActor == this) return;
-	
-	APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
-	if (OtherActor == Player)
-	{
-		PlayerCharacterREF = Player;
-		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Blue,TEXT("Start Turn Based Game"));
-	}
-}
 

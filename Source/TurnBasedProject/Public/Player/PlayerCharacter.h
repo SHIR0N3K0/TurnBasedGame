@@ -11,6 +11,8 @@ class UMyAbilitySystemComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UHUD_Fight;
+class ACustomPlayerController;
 struct FInputActionValue;
 
 UCLASS()
@@ -29,6 +31,7 @@ class TURNBASEDPROJECT_API APlayerCharacter : public ACharacter, public IAbility
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMyAbilitySystemComponent* CustomASC;
 
+
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
@@ -36,6 +39,12 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, Category="UI")
+	UHUD_Fight* HUDFight;
+	
+	UPROPERTY(EditAnywhere, Category="Controller")
+	ACustomPlayerController* PlayerController;
 
 	/** MoveInput Action */
 	UPROPERTY(EditAnywhere, Category="Input")
