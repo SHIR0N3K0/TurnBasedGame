@@ -42,9 +42,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="UI")
 	UHUD_Fight* HUDFight;
+
+	UPROPERTY(EditAnywhere, Category="UI")
+	UUserWidget* CharacterWidget;
 	
-	UPROPERTY(EditAnywhere, Category="Controller")
-	ACustomPlayerController* PlayerController;
+	UPROPERTY()
+	APlayerController* PlayerController;
 
 	/** MoveInput Action */
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -59,6 +62,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* AttackAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* CharacterAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* ZoomAction;
 	
 	//----------------------------------------------InputEvent-----------------------------------------------------
 	/** Called for movement input */
@@ -70,6 +79,10 @@ protected:
 	void Run(const FInputActionValue& Value);
 
 	void Attack(const FInputActionValue& Value);
+
+	void Character(const FInputActionValue& Value);
+
+	void Zoom(const FInputActionValue& Value);
 
 public:	
 	// Called every frame
@@ -86,4 +99,9 @@ public:
 	UFUNCTION()
 	void ExitTurnBasedMode();
 
+	UPROPERTY(EditAnywhere)
+	float CurrentZoom = 400.f;
+
+	UPROPERTY(EditAnywhere)
+	float TargetZoom = 400.f;
 };

@@ -16,8 +16,8 @@
 #include "TurnBasedProject.h"
 #include "Enemy/EnemyPawn.h"
 #include "GameplayAbilities/RunAbility.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Player/CustomPlayerController.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -52,8 +52,16 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	CustomASC->AddLooseGameplayTag(TAG_Mode_TPS);
-	CreateWidget(HUDFight);
-	
+	if (HUDFight)
+	{
+		CreateWidget(HUDFight);
+	}
+	if (CharacterWidget)
+	{
+		CreateWidget(CharacterWidget);
+	}
+
+	PlayerController = Cast<APlayerController>(GetController());
 }
 
 // Called every frame
@@ -61,6 +69,19 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
+	{
+		CurrentZoom = FMath::FInterpTo(CurrentZoom, TargetZoom, DeltaTime, 15.f);
+
+		CameraBoom->TargetArmLength = CurrentZoom;
+
+		// Normalize
+		float Alpha = (CurrentZoom - 100.f) / (400.f - 100.f);
+
+		float ZOffset = FMath::Lerp(0.f, -60.f, Alpha);
+
+		CameraBoom->SocketOffset = FVector(0.f, 0.f, ZOffset);
+	}
 }
 
 // Called to bind functionality to input
@@ -82,6 +103,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		// Attack
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
+
+		// Character
+		EnhancedInputComponent->BindAction(CharacterAction, ETriggerEvent::Started, this, &APlayerCharacter::Character);
+
+		// Zoom
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &APlayerCharacter::Zoom);
 		
 	}
 	else
@@ -182,6 +209,26 @@ void APlayerCharacter::Attack(const FInputActionValue& Value)
 	}
 }
 
+void APlayerCharacter::Character(const FInputActionValue& Value)
+{
+	if (CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(),0);
+		CharacterWidget->AddToViewport();
+	}
+}
+
+void APlayerCharacter::Zoom(const FInputActionValue& Value)
+{
+	float ZoomDirection = Value.Get<float>();
+	float ZoomSpeed = 100.f;
+
+	if (CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
+	{
+			TargetZoom = FMath::Clamp(TargetZoom + ZoomDirection * ZoomSpeed, 100.f, 400.f);
+	}
+}
+
 void APlayerCharacter::EnterTurnBasedMode()
 {
 	CustomASC->AddLooseGameplayTag(TAG_Mode_TurnBased);
@@ -191,7 +238,6 @@ void APlayerCharacter::EnterTurnBasedMode()
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	PlayerController->SetInputMode(InputMode);
 	PlayerController->bShowMouseCursor = true;
-
 	HUDFight->AddToViewport();
 }
 
