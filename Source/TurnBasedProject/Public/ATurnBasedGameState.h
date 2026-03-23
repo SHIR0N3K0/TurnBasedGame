@@ -13,4 +13,18 @@ UCLASS()
 class TURNBASEDPROJECT_API AATurnBasedGameState : public AGameStateBase
 {
 	GENERATED_BODY()
+
+	public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	AActor* TargetActor;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> TargetActorClass;
+
+	protected:
+
+	virtual void BeginPlay() override;
+
+	void SpawnPreview();
 };

@@ -214,6 +214,10 @@ void APlayerCharacter::Character(const FInputActionValue& Value)
 	if (CustomASC && !CustomASC->HasMatchingGameplayTag(TAG_Mode_TurnBased))
 	{
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(),0);
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
 		CharacterWidget->AddToViewport();
 	}
 }
